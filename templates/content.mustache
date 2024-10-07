@@ -1,0 +1,26 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+<div class="course-categories">
+    {{#categories}}
+    <h4>{{name}}</h4>
+    <p>
+        {{#courses}}
+        <span style="color:{{#isenrolled}}blue{{/isenrolled}}{{^isenrolled}}gray{{/isenrolled}};">
+            {{#isenrolled}}
+            <a href="{{{wwwroot}}}/course/view.php?id={{{id}}}">{{fullname}}</a>
+            {{/isenrolled}}
+            {{^isenrolled}}
+            {{fullname}} <!-- Not clickable if not enrolled -->
+            {{/isenrolled}}
+        </span><br>
+        <div class="progress">
+            <div class="progress-bar" role="progressbar" aria-valuenow="{{{progress}}}" aria-valuemin="0" aria-valuemax="100" style="width:{{{progress}}}%">
+                <span class="sr-only">{{{progress}}}% Complete</span> {{{progress}}}%
+            </div>
+        </div>
+        {{/courses}}
+    </p>
+    {{/categories}}
+</div>
