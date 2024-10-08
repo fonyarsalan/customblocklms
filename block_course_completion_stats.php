@@ -102,19 +102,32 @@ class block_course_completion_stats extends block_base {
                 
                 // Fetch badges for this course
                 $badges = $DB->get_records('badge', ['courseid' => $course->id]);
-                
-                $badge_exist = $DB->get_record('badge_issued', ['userid' => $USER->id],'*');
-                $rendered_badges = [];
-                if($badge_exist){
-                    if ($badges) {
-                        $badge_renderer = $PAGE->get_renderer('core_badges');
-                        if($courseProgress==100){
-                            $rendered_badges = $badge_renderer->print_badges_list($badges, $COURSE->id, false, false);
+                $available_badges = [];
+                $badge_renderer = $PAGE->get_renderer('block_course_completion_stats');
+            
+                foreach ($badges as $badge) {
+                    // Check if the badge is visible and issued to the user
+                    $is_visible = $DB->get_record('badge_issued', ['badgeid' => $badge->id], 'visible');
+                    
+                    // Ensure the badge is visible and course progress is 100%
+                    if ($is_visible && $is_visible->visible == 1 && $courseProgress === 100) {
+                        // Check if the badge has been issued to the user
+                        $badge_exist = $DB->get_record('badge_issued', ['userid' => $USER->id, 'badgeid' => $badge->id], '*');
+                        
+                        // Only add the badge if it's issued to the user and visible
+                        if ($badge_exist) {
+                            $available_badges[] = $badge;
                         }
                     }
                 }
-
-    
+            
+                // Render only available badges that are both issued and visible
+                $rendered_badges = [];
+                if (!empty($available_badges)) {
+                    $rendered_badges = $badge_renderer->print_badges_list($available_badges, $course->id, false, false);
+                }
+            
+                // Add the course data along with badges to the course list
                 $course_list[] = [
                     'fullname' => $course->fullname,
                     'id' => $course->id,
@@ -123,6 +136,7 @@ class block_course_completion_stats extends block_base {
                     'badges' => $rendered_badges
                 ];
             }
+            
     
             $categories_with_courses[] = [
                 'name' => $category->name,

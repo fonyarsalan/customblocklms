@@ -9,7 +9,7 @@
     <p>
         {{#courses}}
         <div class="coursecomp">
-            <span style="color:{{#isenrolled}}blue{{/isenrolled}}{{^isenrolled}}gray{{/isenrolled}};">
+            <span style="display:flex;color:{{#isenrolled}}blue{{/isenrolled}}{{^isenrolled}}gray{{/isenrolled}};">
                 {{#isenrolled}}
                 <a href="{{{wwwroot}}}/course/view.php?id={{{id}}}">{{fullname}}</a>
                 {{/isenrolled}}
