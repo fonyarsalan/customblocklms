@@ -57,74 +57,76 @@ class block_course_completion_stats extends block_base {
         $this->title = !empty($this->config->title) ? $this->config->title : get_string('pluginname', 'block_course_completion_stats');
     }
 
-    /**
-     * Gets the block contents.
-     *
-     * @return string The block HTML.
-     */
     public function get_content() {
-        global $OUTPUT;
-
+        global $OUTPUT, $COURSE, $DB, $PAGE, $USER;
+    
         if ($this->content !== null) {
             return $this->content;
         }
-
+    
         $this->content = new stdClass();
         $this->content->footer = '';
-
+    
         // Fetch categories and courses
         $categories = $this->get_all_categories_with_courses();
-
+        
         // Prepare data for the Mustache template
         $data = [
-            'categories' => $categories,
+            'categories' => $categories
         ];
-
+    
         // Render the Mustache template
         $this->content->text = $OUTPUT->render_from_template('block_course_completion_stats/content', $data);
-
+    
         return $this->content;
     }
-
-    /**
-     * Fetch all categories and their associated courses.
-     *
-     * @return array
-     */
+    
     private function get_all_categories_with_courses() {
-        global $DB, $USER;
+        global $DB, $USER, $PAGE;
     
         // Fetch all categories
         $categories = $DB->get_records('course_categories', null, 'name ASC', 'id, name');
-    
+        
         // Prepare an array to hold categories with their courses
         $categories_with_courses = [];
     
         // Iterate through each category and fetch its courses
         foreach ($categories as $category) {
-            // Fetch courses belonging to this category
             $courses = $DB->get_records('course', ['category' => $category->id], 'fullname ASC', 'id, fullname');
-            // Prepare an array of course names for the current category
             $course_list = [];
+    
             foreach ($courses as $course) {
-
                 $courseProgress = progress::get_course_progress_percentage($course->id, $USER->id);
                 $context = \context_course::instance($course->id);
                 $isEnrolled = is_enrolled($context, $USER->id);
- 
-                print_r($courseProgress);
+                
+                // Fetch badges for this course
+                $badges = $DB->get_records('badge', ['courseid' => $course->id]);
+                
+                $badge_exist = $DB->get_record('badge_issued', ['userid' => $USER->id],'*');
+                $rendered_badges = [];
+                if($badge_exist){
+                    if ($badges) {
+                        $badge_renderer = $PAGE->get_renderer('core_badges');
+                        if($courseProgress==100){
+                            $rendered_badges = $badge_renderer->print_badges_list($badges, $COURSE->id, false, false);
+                        }
+                    }
+                }
+
+    
                 $course_list[] = [
-                    'fullname' => $course->fullname, // Use 'fullname' property directly
-                    'id' => $course->id, 
-                    'progress'=>$courseProgress,
-                    'isenrolled' => $isEnrolled
+                    'fullname' => $course->fullname,
+                    'id' => $course->id,
+                    'progress' => $courseProgress,
+                    'isenrolled' => $isEnrolled,
+                    'badges' => $rendered_badges
                 ];
             }
     
-            // Add to the categories array
             $categories_with_courses[] = [
                 'name' => $category->name,
-                'courses' => $course_list, // Update to use formatted course list
+                'courses' => $course_list
             ];
         }
     
@@ -142,7 +144,7 @@ class block_course_completion_stats extends block_base {
             'course-view' => true, // Only show in course pages
             'my-index' => true,
             'site-index' => false, // No appearance on the dashboard or site index
-            'mod' => false, // Not needed for activity modules
+            'mod' => true, // Not needed for activity modules
             'my' => true // Disable block on the dashboard (my page)
         ];
     }
@@ -164,7 +166,7 @@ class block_course_completion_stats extends block_base {
                 $DB->update_record('block_instances', $block);
             }
         }
-    }   
+    }  
 }
 
 class progress extends \core_completion\progress {

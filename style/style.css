@@ -1,0 +1,8 @@
+.badges li {
+    width: 80px !important;
+}
+
+.badges li .badge-image {
+    width: 20px !important;
+    height: 20px !important;
+}
