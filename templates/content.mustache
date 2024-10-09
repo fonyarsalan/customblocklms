@@ -27,9 +27,11 @@
 <br>
         <div class="progress">
             <div class="progress-bar" role="progressbar" aria-valuenow="{{{progress}}}" aria-valuemin="0" aria-valuemax="100" style="width:{{{progress}}}%">
-                <span class="sr-only">{{{progress}}}% Complete</span> {{{progress}}}%
+                <span class="sr-only">{{{progress}}}% Complete</span>
             </div>
+            <p class="progress-percentage" style="color:black; position: absolute; width: 100%; text-align: center;">{{{progress}}}%</p>
         </div>
+
         {{/courses}}
     </p>
     {{/categories}}
