@@ -1,0 +1,17 @@
+.badges li {
+    width: 80px !important;
+}
+
+.badges li .badge-image {
+    width: 20px !important;
+    height: 20px !important;
+}
+.progress-percentage {
+    font-size: 14px !important;
+    line-height: 1.42857143 !important;
+    color: black;
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    margin-top:0;
+}

@@ -22,7 +22,7 @@
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-$string['pluginname'] = 'Course Completion Stats block';
+ $string['course_completion_stats'] = 'Course Completion Stats block';
 $string['pluginname'] = 'Course Completion Statistics';
 $string['course_completion_stats:addinstance'] = 'Add a new Course Completion Stats block';
 $string['course_completion_stats:myaddinstance'] = 'Add a new Course Completion Stats block to the My Moodle page';
